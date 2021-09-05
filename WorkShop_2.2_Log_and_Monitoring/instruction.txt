@@ -1,0 +1,71 @@
+Instruction for Workshop 2.2_Log_and_Monitoring:
+Note: This instruction will demonstrate about how to track log and monitor:
+====================================================
+
+====================================================
+Part1: Container Logging:
+====================================================
+1. Get command prompt for access folder workshop 2.2 by command :cd /xxxx/WorkShop_2.2_Log_and_Monitoring
+2. Check File on WorkShop
+
+3. Create Database Deployment by command:
+	kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202104/master/WorkShop_2.2_Log_and_Monitoring/databasemodule_deploy.yml
+	kubectl get deployment/maindb
+	kubectl get rs
+	kubectl get pods
+
+4. Check Detail of Pods and Ephemeral Containers by command:
+	kubectl describe pods/<pods name>
+
+5. Check Log of Pods/Container by command:
+	kubectl get pods
+	kubectl logs pods/<pods name> -c maindb
+
+6. Create WebModule Deployment by command:
+	kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202104/master/WorkShop_2.2_Log_and_Monitoring/webmodule_deploy.yml
+	kubectl get deployment/web
+	kubectl get rs
+	kubectl get pods
+
+7. Check Log of WebService by command:
+	kubectl logs pods/<pods name> -c webservice
+
+8. Check Log of WebCache by command:
+	kubectl logs pods/<pods name> -c webcache
+
+9. Check Log of Cachedb by command:
+	kubectl logs pods/<pods name> -c cachedb
+
+10. Update ephemeralcontainers pods's name by command:
+	kubectl get pods | grep maindb		==> Record Pods
+	sed -i -e 's/podsname/<pods name>/g' ~/kubernetes_202104/WorkShop_2.2_Log_and_Monitoring/databasemodule_ephemeralcontainers.json
+	more ~/kubernetes_202104/WorkShop_2.2_Log_and_Monitoring/databasemodule_ephemeralcontainers.json
+
+11. Update ephemeral container for maindb's pods by command:
+    kubectl replace --raw /api/v1/namespaces/default/pods/<pods name>/ephemeralcontainers  -f ~/kubernetes_202104/WorkShop_2.2_Log_and_Monitoring/databasemodule_ephemeralcontainers.json
+
+12. Check detail of ephemeralcontainers by command:
+	kubectl get pods | grep maindb
+	kubectl describe pods/<pods name>
+
+13. Checl Log of Ephemeralcontainers by command:
+	kubectl get pods | grep maindb
+	kubectl exec -it pods/<pods name> sh -c debugger
+	apk update && apk add mysql-client busybox-extras
+	telnet maindb 3306
+	mysql -u root -p -h maindb (password: "password")		==> show databases;
+	exit
+	exit
+
+14. Open kubenetes dashboard by command:
+	kubectl get secret -n kubernetes-dashboard 
+	kubectl describe secret <admin-user-token-xxx> -n kubernetes-dashboard ==> Record Token
+	kubectl get pods -n=kubernetes-dashboard
+	kubectl port-forward --address 0.0.0.0 pods/<kubernetes-dashboard-xxx> 8443:8443 -n=kubernetes-dashboard
+
+	*Test by open browser: 
+	https://<Public IP>:8443
+
+11. Cleanup lab by command:
+	kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202104/master/WorkShop_2.2_Log_and_Monitoring/databasemodule_deploy.yml
+	kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202104/master/WorkShop_2.2_Log_and_Monitoring/webmodule_deploy.yml
