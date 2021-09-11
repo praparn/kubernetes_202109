@@ -415,6 +415,8 @@ metadata:
     app.kubernetes.io/component: controller
   name: nginx
   namespace: ingress-nginx
+  #annotation:
+  #  ingressclass.kubernetes.io/is-default-class: true  #This for set default ingress controller on cluster
 spec:
   controller: k8s.io/ingress-nginx
 ---
