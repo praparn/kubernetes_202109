@@ -52,8 +52,9 @@ tmux new -s Lab
 
 4. (Master) Prepare configuration for initial kubernetes master
 	cd ~
-	sed -i -e 's/name: hostnamemaster/name: <hostname of master node>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
+	sed -i -e 's/hostnamemaster/<hostname of master node>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 	sed -i -e 's/clusterName: KubernetesClusterName/clusterName: <ClusterName>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
+	sed -i -e 's/2.2.2.2/<Private IP Address of Master>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 	sed -i -e 's/1.1.1.1/<Public IP Address of Master>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 	more ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 
@@ -67,9 +68,18 @@ tmux new -s Lab
     -------------------------------------------------
     Token output:
     -------------------------------------------------
-    kubeadm join 10.0.1.246:6443 --token 4hqsau.ozlonb6302xc0cn4 --discovery-token-ca-cert-hash sha256:600b3f66c2051914b9f51fcfb104b6b2e8d0a4c0d25f9d386010ef8d34dc9024
 
-	*Remark: Collect ca-cert-hash and token
+You can now join any number of control-plane nodes by copying certificate authorities
+and service account keys on each node and then running the following as root:
+
+  kubeadm join 10.0.1.67:6443 --token 1ogaw7.1dx1qg34qzi6ha5t \
+	--discovery-token-ca-cert-hash sha256:931d6c0f44e2c2558591845ffd95c7fb6ab47e687b83015c2a5b9b229940d786 \
+	--control-plane 
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 10.0.1.67:6443 --token 1ogaw7.1dx1qg34qzi6ha5t \
+	--discovery-token-ca-cert-hash sha256:931d6c0f44e2c2558591845ffd95c7fb6ab47e687b83015c2a5b9b229940d786 
 	-------------------------------------------------
 
 6. (Master) Setup run cluster system by command (Regular User):
@@ -160,6 +170,11 @@ htop
 
 18. (Master) Check Node in Cluster by command (This take 5 - 10 min):
 watch kubectl get nodes
+
+19. (Master) Add label for node of worker by command:
+kubectl label nodes <worker-1 hostname> node-role.kubernetes.io/worker=
+kubectl label nodes <worker-2 hostname> node-role.kubernetes.io/worker=
+kubectl get nodes
 
 19. (Master)Check Pods from all cluster system running by command:
 watch kubectl get pods --all-namespaces

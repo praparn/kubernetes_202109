@@ -25,7 +25,7 @@ nodeRegistration:
     - IsPrivilegedUser
   imagePullPolicy: "IfNotPresent"
 localAPIEndpoint:
-  #advertiseAddress: "2.2.2.2"
+  advertiseAddress: "2.2.2.2"
   bindPort: 6443
 #certificateKey: "e6a2eb8581237ab72a4f494f30285ec12a9694d750b9785706a83bfcbbbd2204"
 #skipPhases:
@@ -57,7 +57,7 @@ networking:
   podSubnet: "192.168.0.0/16"
   dnsDomain: "cluster.local"
 kubernetesVersion: "v1.22.1"
-#controlPlaneEndpoint: "2.2.2.2:6443"
+controlPlaneEndpoint: "2.2.2.2:6443"
 apiServer:
   extraArgs:
     authorization-mode: "Node,RBAC"
@@ -84,7 +84,7 @@ controllerManager:
   #    pathType: File
 scheduler:
   extraArgs:
-    #address: "10.100.0.1"
+    address: "2.2.2.2"
     "feature-gates": "APIServerTracing=true,CPUManagerPolicyOptions=true,ExpandedDNSConfig=true"
  # extraVolumes:
  #   - name: "some-volume"

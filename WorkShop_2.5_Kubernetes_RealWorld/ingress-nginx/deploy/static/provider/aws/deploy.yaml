@@ -37,6 +37,9 @@ metadata:
   name: ingress-nginx-controller
   namespace: ingress-nginx
 data:
+  use-http2: "true"
+  proxy-body-size: "50m"
+  keepalive_timeout: "350"
 ---
 # Source: ingress-nginx/templates/clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1
