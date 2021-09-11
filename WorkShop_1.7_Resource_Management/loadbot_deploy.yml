@@ -10,6 +10,7 @@ metadata:
     environment: development
 spec:
   replicas: 5
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       name: loadbot
