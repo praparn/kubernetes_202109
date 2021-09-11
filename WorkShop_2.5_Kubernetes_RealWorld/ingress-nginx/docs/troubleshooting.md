@@ -1,7 +1,7 @@
 <!--
 -----------------NOTICE------------------------
 This file is referenced in code as
-https://github.com/kubernetes/ingress-nginx/blob/master/docs/troubleshooting.md
+https://github.com/kubernetes/ingress-nginx/blob/main/docs/troubleshooting.md
 Do not move it without providing redirects.
 -----------------------------------------------
 -->
@@ -32,7 +32,7 @@ Rules:
             /tea      tea-svc:80 (<none>)
             /coffee   coffee-svc:80 (<none>)
 Annotations:
-  kubectl.kubernetes.io/last-applied-configuration:  {"apiVersion":"networking.k8s.io/v1beta1","kind":"Ingress","metadata":{"annotations":{},"name":"cafe-ingress","namespace":"default","selfLink":"/apis/networking/v1beta1/namespaces/default/ingresses/cafe-ingress"},"spec":{"rules":[{"host":"cafe.com","http":{"paths":[{"backend":{"serviceName":"tea-svc","servicePort":80},"path":"/tea"},{"backend":{"serviceName":"coffee-svc","servicePort":80},"path":"/coffee"}]}}]},"status":{"loadBalancer":{"ingress":[{"ip":"169.48.142.110"}]}}}
+  kubectl.kubernetes.io/last-applied-configuration:  {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{},"name":"cafe-ingress","namespace":"default","selfLink":"/apis/networking/v1/namespaces/default/ingresses/cafe-ingress"},"spec":{"rules":[{"host":"cafe.com","http":{"paths":[{"backend":{"serviceName":"tea-svc","servicePort":80},"path":"/tea"},{"backend":{"serviceName":"coffee-svc","servicePort":80},"path":"/coffee"}]}}]},"status":{"loadBalancer":{"ingress":[{"ip":"169.48.142.110"}]}}}
 
 Events:
   Type    Reason  Age   From                      Message
@@ -173,68 +173,47 @@ Verify with the following commands:
 
 ```console
 # start a container that contains curl
-$ kubectl run test --image=tutum/curl -- sleep 10000
-
-# check that container is running
-$ kubectl get pods
-NAME                   READY     STATUS    RESTARTS   AGE
-test-701078429-s5kca   1/1       Running   0          16s
+$ kubectl run -it --rm test --image=curlimages/curl --restart=Never -- /bin/sh
 
 # check if secret exists
-$ kubectl exec test-701078429-s5kca -- ls /var/run/secrets/kubernetes.io/serviceaccount/
-ca.crt
-namespace
-token
-
-# get service IP of master
-$ kubectl get services
-NAME         CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
-kubernetes   10.0.0.1     <none>        443/TCP   1d
+/ $ ls /var/run/secrets/kubernetes.io/serviceaccount/
+ca.crt     namespace  token
+/ $
 
 # check base connectivity from cluster inside
-$ kubectl exec test-701078429-s5kca -- curl -k https://10.0.0.1
-Unauthorized
+/ $ curl -k https://kubernetes.default.svc.cluster.local
+{
+  "kind": "Status",
+  "apiVersion": "v1",
+  "metadata": {
+
+  },
+  "status": "Failure",
+  "message": "forbidden: User \"system:anonymous\" cannot get path \"/\"",
+  "reason": "Forbidden",
+  "details": {
+
+  },
+  "code": 403
+}/ $
 
 # connect using tokens
-$ TOKEN_VALUE=$(kubectl exec test-701078429-s5kca -- cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-$ echo $TOKEN_VALUE
-eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3Mi....9A
-$ kubectl exec test-701078429-s5kca -- curl --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H  "Authorization: Bearer $TOKEN_VALUE" https://10.0.0.1
+}/ $ curl --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt -H  "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://kubernetes.default.svc.cluster.local
+&& echo
 {
   "paths": [
     "/api",
     "/api/v1",
     "/apis",
-    "/apis/apps",
-    "/apis/apps/v1alpha1",
-    "/apis/authentication.k8s.io",
-    "/apis/authentication.k8s.io/v1beta1",
-    "/apis/authorization.k8s.io",
-    "/apis/authorization.k8s.io/v1beta1",
-    "/apis/autoscaling",
-    "/apis/autoscaling/v1",
-    "/apis/batch",
-    "/apis/batch/v1",
-    "/apis/batch/v2alpha1",
-    "/apis/certificates.k8s.io",
-    "/apis/certificates.k8s.io/v1alpha1",
-    "/apis/networking",
-    "/apis/networking/v1beta1",
-    "/apis/policy",
-    "/apis/policy/v1alpha1",
-    "/apis/rbac.authorization.k8s.io",
-    "/apis/rbac.authorization.k8s.io/v1alpha1",
-    "/apis/storage.k8s.io",
-    "/apis/storage.k8s.io/v1beta1",
-    "/healthz",
-    "/healthz/ping",
-    "/logs",
-    "/metrics",
-    "/swaggerapi/",
-    "/ui/",
+    "/apis/",
+    ... TRUNCATED
+    "/readyz/shutdown",
     "/version"
   ]
 }
+/ $
+
+# when you type `exit` or `^D` the test pod will be deleted.
 ```
 
 If it is not working, there are two possible reasons:

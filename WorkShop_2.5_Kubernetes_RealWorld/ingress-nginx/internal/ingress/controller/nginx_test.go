@@ -19,7 +19,6 @@ package controller
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/http/httptest"
@@ -31,6 +30,7 @@ import (
 
 	jsoniter "github.com/json-iterator/go"
 	apiv1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/util/wait"
 
 	"k8s.io/ingress-nginx/internal/ingress"
 	"k8s.io/ingress-nginx/internal/nginx"
@@ -149,13 +149,13 @@ func TestIsDynamicConfigurationEnough(t *testing.T) {
 }
 
 func TestConfigureDynamically(t *testing.T) {
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%v", nginx.StatusPort))
+	listener, err := tryListen("tcp", fmt.Sprintf(":%v", nginx.StatusPort))
 	if err != nil {
 		t.Fatalf("creating tcp listener: %s", err)
 	}
 	defer listener.Close()
 
-	streamListener, err := net.Listen("tcp", fmt.Sprintf(":%v", nginx.StreamPort))
+	streamListener, err := tryListen("tcp", fmt.Sprintf(":%v", nginx.StreamPort))
 	if err != nil {
 		t.Fatalf("creating tcp listener: %s", err)
 	}
@@ -178,7 +178,7 @@ func TestConfigureDynamically(t *testing.T) {
 					t.Errorf("expected a 'POST' request, got '%s'", r.Method)
 				}
 
-				b, err := ioutil.ReadAll(r.Body)
+				b, err := io.ReadAll(r.Body)
 				if err != nil && err != io.EOF {
 					t.Fatal(err)
 				}
@@ -303,13 +303,13 @@ func TestConfigureDynamically(t *testing.T) {
 }
 
 func TestConfigureCertificates(t *testing.T) {
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%v", nginx.StatusPort))
+	listener, err := tryListen("tcp", fmt.Sprintf(":%v", nginx.StatusPort))
 	if err != nil {
 		t.Fatalf("creating tcp listener: %s", err)
 	}
 	defer listener.Close()
 
-	streamListener, err := net.Listen("tcp", fmt.Sprintf(":%v", nginx.StreamPort))
+	streamListener, err := tryListen("tcp", fmt.Sprintf(":%v", nginx.StreamPort))
 	if err != nil {
 		t.Fatalf("creating tcp listener: %s", err)
 	}
@@ -338,7 +338,7 @@ func TestConfigureCertificates(t *testing.T) {
 					t.Errorf("expected a 'POST' request, got '%s'", r.Method)
 				}
 
-				b, err := ioutil.ReadAll(r.Body)
+				b, err := io.ReadAll(r.Body)
 				if err != nil && err != io.EOF {
 					t.Fatal(err)
 				}
@@ -477,7 +477,7 @@ func TestCleanTempNginxCfg(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	tmpfile, err := ioutil.TempFile("", tempNginxPattern)
+	tmpfile, err := os.CreateTemp("", tempNginxPattern)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -494,7 +494,7 @@ func TestCleanTempNginxCfg(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	tmpfile, err = ioutil.TempFile("", tempNginxPattern)
+	tmpfile, err = os.CreateTemp("", tempNginxPattern)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -524,4 +524,26 @@ func TestCleanTempNginxCfg(t *testing.T) {
 	if len(files) != 1 {
 		t.Errorf("expected one file but %d were found", len(files))
 	}
+}
+
+func tryListen(network, address string) (l net.Listener, err error) {
+	condFunc := func() (bool, error) {
+		l, err = net.Listen(network, address)
+		if err == nil {
+			return true, nil
+		}
+		if strings.Contains(err.Error(), "bind: address already in use") {
+			return false, nil
+		}
+		return false, err
+	}
+
+	backoff := wait.Backoff{
+		Duration: 500 * time.Millisecond,
+		Factor:   2,
+		Steps:    6,
+		Cap:      128 * time.Second,
+	}
+	err = wait.ExponentialBackoff(backoff, condFunc)
+	return
 }

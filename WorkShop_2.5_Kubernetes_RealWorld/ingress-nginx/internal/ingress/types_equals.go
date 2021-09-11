@@ -182,6 +182,9 @@ func (csa1 *CookieSessionAffinity) Equal(csa2 *CookieSessionAffinity) bool {
 	if csa1.SameSite != csa2.SameSite {
 		return false
 	}
+	if csa1.Secure != csa2.Secure {
+		return false
+	}
 	if csa1.ConditionalSameSiteNone != csa2.ConditionalSameSiteNone {
 		return false
 	}
@@ -547,6 +550,9 @@ func (s1 *SSLCert) Equal(s2 *SSLCert) bool {
 		return false
 	}
 	if s1.CASHA != s2.CASHA {
+		return false
+	}
+	if s1.CRLSHA != s2.CRLSHA {
 		return false
 	}
 	if s1.PemSHA != s2.PemSHA {

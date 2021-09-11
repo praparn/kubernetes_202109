@@ -31,6 +31,9 @@ type Backend struct {
 	// By default this is disabled
 	CustomHTTPErrors []int `json:"custom-http-errors"`
 
+	// toggles whether or not to remove trailing slashes during TLS redirects
+	PreserveTrailingSlash bool `json:"preserve-trailing-slash"`
+
 	// http://nginx.org/en/docs/http/ngx_http_core_module.html#client_max_body_size
 	// Sets the maximum allowed size of the client request body
 	ProxyBodySize string `json:"proxy-body-size"`
@@ -158,4 +161,8 @@ type Backend struct {
 	// Sets the maximum temp file size when proxy-buffers capacity is exceeded.
 	// http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_max_temp_file_size
 	ProxyMaxTempFileSize string `json:"proxy-max-temp-file-size"`
+
+	// By default, the NGINX ingress controller uses a list of all endpoints (Pod IP/port) in the NGINX upstream configuration.
+	// It disables that behavior and instead uses a single upstream in NGINX, the service's Cluster IP and port.
+	ServiceUpstream bool `json:"service-upstream"`
 }

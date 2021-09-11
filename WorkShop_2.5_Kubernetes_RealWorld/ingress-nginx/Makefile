@@ -51,7 +51,7 @@ endif
 
 REGISTRY ?= gcr.io/k8s-staging-ingress-nginx
 
-BASE_IMAGE ?= k8s.gcr.io/ingress-nginx/nginx:v20210115-gba0502603@sha256:224da667cf3047998ea691e9766fedd1eab94257a39df81374bfa14536da3688
+BASE_IMAGE ?= k8s.gcr.io/ingress-nginx/nginx:v20210904-gb7c973dce@sha256:fac972a7e43b18408ecb9e87da868df519428294e2e988c16be72479ee873c0e
 
 GOARCH=$(ARCH)
 
@@ -136,12 +136,6 @@ e2e-test-binary:  ## Build binary for e2e tests.
 print-e2e-suite: e2e-test-binary ## Prints information about the suite of e2e tests.
 	@build/run-in-docker.sh \
 		hack/print-e2e-suite.sh
-
-.PHONY: cover
-cover:  ## Run go coverage unit tests.
-	@build/cover.sh
-	echo "Uploading coverage results..."
-	@curl -s https://codecov.io/bash | bash
 
 .PHONY: vet
 vet:

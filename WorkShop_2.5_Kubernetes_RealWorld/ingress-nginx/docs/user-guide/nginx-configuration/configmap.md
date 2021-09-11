@@ -5,7 +5,7 @@ ConfigMaps allow you to decouple configuration artifacts from image content to k
 The ConfigMap API resource stores configuration data as key-value pairs. The data provides the configurations for system
 components for the nginx-controller.
 
-In order to overwrite nginx-controller configuration values as seen in [config.go](https://github.com/kubernetes/ingress-nginx/blob/master/internal/ingress/controller/config/config.go),
+In order to overwrite nginx-controller configuration values as seen in [config.go](https://github.com/kubernetes/ingress-nginx/blob/main/internal/ingress/controller/config/config.go),
 you can add key-value pairs to the data section of the config-map. For Example:
 
 ```yaml
@@ -54,7 +54,7 @@ The following table shows a configuration option's name, type, and the default v
 |[http2-max-field-size](#http2-max-field-size)|string|"4k"|
 |[http2-max-header-size](#http2-max-header-size)|string|"16k"|
 |[http2-max-requests](#http2-max-requests)|int|1000|
-|[http2-max-concurrent-streams](#http2-max-concurrent-streams)|int|1000|
+|[http2-max-concurrent-streams](#http2-max-concurrent-streams)|int|128|
 |[hsts](#hsts)|bool|"true"|
 |[hsts-include-subdomains](#hsts-include-subdomains)|bool|"true"|
 |[hsts-max-age](#hsts-max-age)|string|"15724800"|
@@ -134,6 +134,7 @@ The following table shows a configuration option's name, type, and the default v
 |[jaeger-collector-port](#jaeger-collector-port)|int|6831|
 |[jaeger-endpoint](#jaeger-endpoint)|string|""|
 |[jaeger-service-name](#jaeger-service-name)|string|"nginx"|
+|[jaeger-propagation-format](#jaeger-propagation-format)|string|"jaeger"|
 |[jaeger-sampler-type](#jaeger-sampler-type)|string|"const"|
 |[jaeger-sampler-param](#jaeger-sampler-param)|string|"1"|
 |[jaeger-sampler-host](#jaeger-sampler-host)|string|"http://127.0.0.1"|
@@ -177,6 +178,9 @@ The following table shows a configuration option's name, type, and the default v
 |[proxy-buffering](#proxy-buffering)|string|"off"|
 |[limit-req-status-code](#limit-req-status-code)|int|503|
 |[limit-conn-status-code](#limit-conn-status-code)|int|503|
+|[enable-syslog](#enable-syslog)|bool|false|
+|[syslog-host](#syslog-host)|string|""|
+|[syslog-port](#syslog-port)|int|514|
 |[no-tls-redirect-locations](#no-tls-redirect-locations)|string|"/.well-known/acme-challenge"|
 |[global-auth-url](#global-auth-url)|string|""|
 |[global-auth-method](#global-auth-method)|string|""|
@@ -199,10 +203,11 @@ The following table shows a configuration option's name, type, and the default v
 |[global-rate-limit-memcached-max-idle-timeout](#global-rate-limit)|int|10000|
 |[global-rate-limit-memcached-pool-size](#global-rate-limit)|int|50|
 |[global-rate-limit-status-code](#global-rate-limit)|int|429|
+|[service-upstream](#service-upstream)|bool|"false"|
 
 ## add-headers
 
-Sets custom headers from named configmap before sending traffic to the client. See [proxy-set-headers](#proxy-set-headers). [example](https://github.com/kubernetes/ingress-nginx/tree/master/docs/examples/customization/custom-headers)
+Sets custom headers from named configmap before sending traffic to the client. See [proxy-set-headers](#proxy-set-headers). [example](https://github.com/kubernetes/ingress-nginx/tree/main/docs/examples/customization/custom-headers)
 
 ## allow-backend-server-header
 
@@ -384,7 +389,7 @@ Sets the time, in seconds, that the browser should remember that this site is on
 
 ## hsts-preload
 
-Enables or disables the preload attribute in the HSTS feature (when it is enabled) dd
+Enables or disables the preload attribute in the HSTS feature (when it is enabled).
 
 ## keep-alive
 
@@ -392,6 +397,24 @@ Sets the time during which a keep-alive client connection will stay open on the 
 
 _References:_
 [http://nginx.org/en/docs/http/ngx_http_core_module.html#keepalive_timeout](http://nginx.org/en/docs/http/ngx_http_core_module.html#keepalive_timeout)
+
+!!! important
+    Setting `keep-alive: '0'` will most likely break concurrent http/2 requests due to changes introduced with nginx 1.19.7
+
+```
+Changes with nginx 1.19.7                                        16 Feb 2021
+
+    *) Change: connections handling in HTTP/2 has been changed to better
+       match HTTP/1.x; the "http2_recv_timeout", "http2_idle_timeout", and
+       "http2_max_requests" directives have been removed, the
+       "keepalive_timeout" and "keepalive_requests" directives should be
+       used instead.
+```
+
+_References:_
+[nginx change log](http://nginx.org/en/CHANGES)
+[nginx issue tracker](https://trac.nginx.org/nginx/ticket/2155)
+[nginx mailing list](https://mailman.nginx.org/pipermail/nginx/2021-May/060697.html)
 
 ## keep-alive-requests
 
@@ -450,7 +473,7 @@ _**default:**_ 16384
 ## max-worker-open-files
 
 Sets the [maximum number of files](http://nginx.org/en/docs/ngx_core_module.html#worker_rlimit_nofile) that can be opened by each worker process.
-The default of 0 means "max open files (system's limit) / [worker-processes](#worker-processes) - 1024".
+The default of 0 means "max open files (system's limit) - 1024".
 _**default:**_ 0
 
 ## map-hash-bucket-size
@@ -459,11 +482,12 @@ Sets the bucket size for the [map variables hash tables](http://nginx.org/en/doc
 
 ## proxy-real-ip-cidr
 
-If use-forwarded-headers or use-proxy-protocol is enabled, proxy-real-ip-cidr defines the default the IP/network address of your external load balancer.
+If `use-forwarded-headers` or `use-proxy-protocol` is enabled, `proxy-real-ip-cidr` defines the default IP/network address of your external load balancer. Can be a comma-separated list of CIDR blocks.
+_**default:**_ "0.0.0.0/0"
 
 ## proxy-set-headers
 
-Sets custom headers from named configmap before sending traffic to backends. The value format is namespace/name.  See [example](https://github.com/kubernetes/ingress-nginx/tree/master/docs/examples/customization/custom-headers)
+Sets custom headers from named configmap before sending traffic to backends. The value format is namespace/name.  See [example](https://github.com/kubernetes/ingress-nginx/tree/main/docs/examples/customization/custom-headers)
 
 ## server-name-hash-max-size
 
@@ -506,7 +530,7 @@ _References:_
 
 ## plugins
 
-Activates plugins installed in `/etc/nginx/lua/plugins`. Refer to [ingress-nginx plugins README](https://github.com/kubernetes/ingress-nginx/blob/master/rootfs/etc/nginx/lua/plugins/README.md) for more information on how to write and install a plugin.
+Activates plugins installed in `/etc/nginx/lua/plugins`. Refer to [ingress-nginx plugins README](https://github.com/kubernetes/ingress-nginx/blob/main/rootfs/etc/nginx/lua/plugins/README.md) for more information on how to write and install a plugin.
 
 ## server-tokens
 
@@ -521,7 +545,7 @@ The default cipher list is:
 
 The ordering of a ciphersuite is very important because it decides which algorithms are going to be selected in priority. The recommendation above prioritizes algorithms that provide perfect [forward secrecy](https://wiki.mozilla.org/Security/Server_Side_TLS#Forward_Secrecy).
 
-DHE-based cyphers will not be available until DH parameter is configured [Custom DH parameters for perfect forward secrecy](https://github.com/kubernetes/ingress-nginx/tree/master/docs/examples/customization/ssl-dh-param)
+DHE-based cyphers will not be available until DH parameter is configured [Custom DH parameters for perfect forward secrecy](https://github.com/kubernetes/ingress-nginx/tree/main/docs/examples/customization/ssl-dh-param)
 
 Please check the [Mozilla SSL Configuration Generator](https://mozilla.github.io/server-side-tls/ssl-config-generator/).
 
@@ -679,7 +703,7 @@ Sets the algorithm to use for load balancing.
 The value can either be:
 
 - round_robin: to use the default round robin loadbalancer
-- ewma: to use the Peak EWMA method for routing ([implementation](https://github.com/kubernetes/ingress-nginx/blob/master/rootfs/etc/nginx/lua/balancer/ewma.lua))
+- ewma: to use the Peak EWMA method for routing ([implementation](https://github.com/kubernetes/ingress-nginx/blob/main/rootfs/etc/nginx/lua/balancer/ewma.lua))
 
 The default is `round_robin`.
 
@@ -853,6 +877,10 @@ Specifies the endpoint to use when uploading traces to a collector. This takes p
 ## jaeger-service-name
 
 Specifies the service name to use for any traces created. _**default:**_ nginx
+
+## jaeger-propagation-format
+
+Specifies the traceparent/tracestate propagation format. _**default:**_ jaeger
 
 ## jaeger-sampler-type
 
@@ -1040,6 +1068,12 @@ For example following will set default `certificate_data` dictionary to `100M` a
 lua-shared-dicts: "certificate_data: 100, my_custom_plugin: 5"
 ```
 
+You can optionally set a size unit to allow for kilobyte-granularity. Allowed units are 'm' or 'k' (case-insensitive), and it defaults to MB if no unit is provided. Here is a similar example, but the `my_custom_plugin` dict is only 512KB.
+
+```
+lua-shared-dicts: "certificate_data: 100, my_custom_plugin: 512k"
+```
+
 _References:_
 [http://nginx.org/en/docs/http/ngx_http_core_module.html#limit_rate_after](http://nginx.org/en/docs/http/ngx_http_core_module.html#limit_rate_after)
 
@@ -1065,6 +1099,18 @@ Sets the [status code to return in response to rejected requests](http://nginx.o
 
 Sets the [status code to return in response to rejected connections](http://nginx.org/en/docs/http/ngx_http_limit_conn_module.html#limit_conn_status). _**default:**_ 503
 
+## enable-syslog
+
+Enable [syslog](http://nginx.org/en/docs/syslog.html) feature for access log and error log. _**default:**_ false
+
+## syslog-host
+
+Sets the address of syslog server. The address can be specified as a domain name or IP address.
+
+## syslog-port
+
+Sets the port of syslog server. _**default:**_ 514
+
 ## no-tls-redirect-locations
 
 A comma-separated list of locations on which http requests will never get redirected to their https counterpart.
@@ -1077,7 +1123,7 @@ Similar to the Ingress rule annotation `nginx.ingress.kubernetes.io/auth-url`.
 Locations that should not get authenticated can be listed using `no-auth-locations` See [no-auth-locations](#no-auth-locations). In addition, each service can be excluded from authentication via annotation `enable-global-auth` set to "false".
 _**default:**_ ""
 
-_References:_ [https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md#external-authentication](https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md#external-authentication)
+_References:_ [https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#external-authentication](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#external-authentication)
 
 ## global-auth-method
 
@@ -1168,7 +1214,7 @@ _References:_
 
 * `global-rate-limit-status-code`: configure HTTP status code to return when rejecting requests. Defaults to 429.
 
-Configure `memcached` client for [Global Rate Limiting](https://github.com/kubernetes/ingress-nginx/blob/master/docs/user-guide/nginx-configuration/annotations.md#global-rate-limiting).
+Configure `memcached` client for [Global Rate Limiting](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/annotations.md#global-rate-limiting).
 
 * `global-rate-limit-memcached-host`: IP/FQDN of memcached server to use. Required to enable Global Rate Limiting.
 * `global-rate-limit-memcached-port`: port of memcached server to use. Defaults default memcached port of `11211`.
@@ -1179,3 +1225,8 @@ Configure `memcached` client for [Global Rate Limiting](https://github.com/kuber
 
 These settings get used by [lua-resty-global-throttle](https://github.com/ElvinEfendi/lua-resty-global-throttle)
 that ingress-nginx includes. Refer to the link to learn more about `lua-resty-global-throttle`.
+
+## service-upstream
+
+Set if the service's Cluster IP and port should be used instead of a list of all endpoints. This can be overwritten by an annotation on an Ingress rule.
+_**default:**_ "false"

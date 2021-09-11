@@ -35,6 +35,9 @@ local IMPLEMENTATIONS = {
   ewma = ewma,
 }
 
+local PROHIBITED_LOCALHOST_PORT = configuration.prohibited_localhost_port or '10246'
+local PROHIBITED_PEER_PATTERN = "^127.*:" .. PROHIBITED_LOCALHOST_PORT .. "$"
+
 local _M = {}
 local balancers = {}
 local backends_with_external_name = {}
@@ -45,7 +48,7 @@ local function get_implementation(backend)
 
   if backend["sessionAffinityConfig"] and
      backend["sessionAffinityConfig"]["name"] == "cookie" then
-    if backend["sessionAffinityConfig"]["mode"] == 'persistent' then
+    if backend["sessionAffinityConfig"]["mode"] == "persistent" then
       name = "sticky_persistent"
     else
       name = "sticky_balanced"
@@ -183,6 +186,11 @@ local function sync_backends()
 end
 
 local function route_to_alternative_balancer(balancer)
+  if balancer.is_affinitized(balancer) then
+    -- If request is already affinitized to a primary balancer, keep the primary balancer.
+    return false
+  end
+
   if not balancer.alternative_backends then
     return false
   end
@@ -201,6 +209,13 @@ local function route_to_alternative_balancer(balancer)
     return false
   end
 
+  if alternative_balancer.is_affinitized(alternative_balancer) then
+    -- If request is affinitized to an alternative balancer, instruct caller to
+    -- switch to alternative.
+    return true
+  end
+
+  -- Use traffic shaping policy, if request didn't have affinity set.
   local traffic_shaping_policy =  alternative_balancer.traffic_shaping_policy
   if not traffic_shaping_policy then
     ngx.log(ngx.ERR, "traffic shaping policy is not set for balancer ",
@@ -251,6 +266,10 @@ local function route_to_alternative_balancer(balancer)
   return false
 end
 
+local function get_balancer_by_upstream_name(upstream_name)
+  return balancers[upstream_name]
+end
+
 local function get_balancer()
   if ngx.ctx.balancer then
     return ngx.ctx.balancer
@@ -260,7 +279,7 @@ local function get_balancer()
 
   local balancer = balancers[backend_name]
   if not balancer then
-    return
+    return nil
   end
 
   if route_to_alternative_balancer(balancer) then
@@ -317,6 +336,11 @@ function _M.balance()
     return
   end
 
+  if peer:match(PROHIBITED_PEER_PATTERN) then
+    ngx.log(ngx.ERR, "attempted to proxy to self, balancer: ", balancer.name, ", peer: ", peer)
+    return
+  end
+
   ngx_balancer.set_more_tries(1)
 
   local ok, err = ngx_balancer.set_current_peer(peer)
@@ -344,6 +368,7 @@ setmetatable(_M, {__index = {
   sync_backend = sync_backend,
   route_to_alternative_balancer = route_to_alternative_balancer,
   get_balancer = get_balancer,
+  get_balancer_by_upstream_name = get_balancer_by_upstream_name,
 }})
 
 return _M

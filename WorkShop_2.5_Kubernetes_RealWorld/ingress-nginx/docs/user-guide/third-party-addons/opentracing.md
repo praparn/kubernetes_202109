@@ -64,6 +64,9 @@ jaeger-endpoint
 # specifies the service name to use for any traces created, Default: nginx
 jaeger-service-name
 
+# specifies the traceparent/tracestate propagation format
+jaeger-propagation-format
+
 # specifies the sampler to be used when sampling traces.
 # The available samplers are: const, probabilistic, ratelimiting, remote, Default: const
 jaeger-sampler-type
@@ -165,7 +168,7 @@ In the Zipkin interface we can see the details:
 
     # Apply the Ingress Resource
     $ echo '
-      apiVersion: networking.k8s.io/v1beta1
+      apiVersion: networking.k8s.io/v1
       kind: Ingress
       metadata:
         name: echo-ingress

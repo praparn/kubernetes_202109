@@ -23,6 +23,8 @@ REGISTRY ?= local
 
 IMAGE = $(REGISTRY)/e2e-test-runner
 
+NGINX_BASE_IMAGE ?= k8s.gcr.io/ingress-nginx/nginx:v20210904-gb7c973dce@sha256:fac972a7e43b18408ecb9e87da868df519428294e2e988c16be72479ee873c0e
+
 # required to enable buildx
 export DOCKER_CLI_EXPERIMENTAL=enabled
 
@@ -36,10 +38,10 @@ build: ensure-buildx
 		--platform=${PLATFORMS} $(OUTPUT) \
 		--progress=$(PROGRESS) \
 		--pull \
-		--build-arg BASE_IMAGE=k8s.gcr.io/ingress-nginx/nginx:v20210104-g2254a9186@sha256:edd1d06bc6892b0dfb42de7d782ceb3c50eec843b09024abf3f95ba23f4feed5 \
-		--build-arg GOLANG_VERSION=1.15.6 \
+		--build-arg BASE_IMAGE=$(NGINX_BASE_IMAGE) \
+		--build-arg GOLANG_VERSION=1.17.0 \
 		--build-arg ETCD_VERSION=3.4.3-0 \
-		--build-arg K8S_RELEASE=v1.19.4 \
+		--build-arg K8S_RELEASE=v1.21.3 \
 		--build-arg RESTY_CLI_VERSION=0.27 \
 		--build-arg RESTY_CLI_SHA=e5f4f3128af49ba5c4d039d0554e5ae91bbe05866f60eccfa96d3653274bff90 \
 		--build-arg LUAROCKS_VERSION=3.3.1 \
@@ -58,7 +60,7 @@ push: build
 ensure-buildx:
 # this is required for cloudbuild
 ifeq ("$(wildcard $(INIT_BUILDX))","")
-	@curl -sSL https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/hack/init-buildx.sh | bash
+	@curl -sSL https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/hack/init-buildx.sh | bash
 else
 	@exec $(INIT_BUILDX)
 endif
