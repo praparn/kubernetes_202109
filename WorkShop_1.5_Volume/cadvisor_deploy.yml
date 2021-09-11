@@ -36,6 +36,7 @@ metadata:
     environment: development
 spec:
   replicas: 1
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       name: cadvisor

@@ -62,7 +62,7 @@ Note: This instruction will demonstrate about how to use Deployment/RS for deplo
 	kubectl get pods
 
 15. Test curl and web browser for access web by command:
-		open browser for test can operate: http://<Public IP>:32500 or curl http://<Private IP>:32500
+    open browser for test can operate: http://<Public IP>:32500 or curl http://<Private IP>:32500
 
 16. Check revision of change on history:
 	kubectl rollout history deployment/webtest
@@ -82,8 +82,17 @@ Note: This instruction will demonstrate about how to use Deployment/RS for deplo
 	kubectl rollout status deployment/webtest
 
 18. Test curl and web browser for access web by command:
-			open browser for test can operate: http://<Public IP>:32500 or curl http://<Private IP>:32500
+    open browser for test can operate: http://<Public IP>:32500 or curl http://<Private IP>:32500
 
-20. Cleanup Lab by command:
+19. Check revision of change on history:
+	kubectl rollout history deployment/webtest
+
+20. Test RevisionHistoryLimit by apply next version by command:
+    kubectl set image deployment/webtest webtest=labdocker/cluster:webservicelite_v1 --record=true
+	kubectl rollout status deployment/webtest
+	kubectl rollout history deployment/webtest
+	kubectl get rs
+
+21. Cleanup Lab by command:
 	kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.4_Deployment/webtest_deploy.yml
 	kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.4_Deployment/webtest_svc.yml
