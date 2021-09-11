@@ -2,6 +2,7 @@ Instruction for Workshop 2.5 Kubernetes in RealWorld:
 Note: This instruction will start lab for kubernetes's cluster for real workshop:
 
 0. Reinitial your machine before grouping with your friend by command:
+    kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.5_Kubernetes_RealWorld/calico_tuning.yaml
 	sudo su -
     kubeadm reset
 	rm -rf /var/lib/etcd
@@ -53,7 +54,6 @@ tmux new -s Lab
 	cd ~
 	sed -i -e 's/name: hostnamemaster/name: <hostname of master node>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 	sed -i -e 's/clusterName: KubernetesClusterName/clusterName: <ClusterName>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
-	sed -i -e 's/2.2.2.2/<Private IP Address of Master>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 	sed -i -e 's/1.1.1.1/<Public IP Address of Master>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 	more ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 
