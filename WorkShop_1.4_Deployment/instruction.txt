@@ -6,12 +6,12 @@ Note: This instruction will demonstrate about how to use Deployment/RS for deplo
 2. Check File on WorkShop
 
 3. Create Deployment and check status by command:
-	kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.4_Deployment/webtest_deploy.yml --record
+	kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.4_Deployment/webtest_deploy.yml --record=true
 	kubectl get deployment
 	kubectl get pods --show-labels
 
 4. Create Service and check status by command:
-	kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.4_Deployment/webtest_svc.yml --record
+	kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.4_Deployment/webtest_svc.yml
 	kubectl get svc
 	---------------------------------------------------
 	Example: Port mapping outside on TCP:32500
