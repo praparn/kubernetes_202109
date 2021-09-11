@@ -10,6 +10,7 @@ metadata:
     environment: development
 spec:
   replicas: 3
+  revisionHistoryLimit: 5
   selector:
     matchLabels:
       name: web
