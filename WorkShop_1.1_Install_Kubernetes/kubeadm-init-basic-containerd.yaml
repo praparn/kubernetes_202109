@@ -34,7 +34,7 @@ etcd:
   # one of local or external
   local:
     imageRepository: "k8s.gcr.io"
-    imageTag: "3.5.0"
+    imageTag: "etcd:3.5.0-0"
     dataDir: "/var/lib/etcd"
   #  extraArgs:
     #  listen-client-urls: "http://10.100.0.1:2379"
