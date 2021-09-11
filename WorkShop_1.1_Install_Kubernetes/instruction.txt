@@ -13,7 +13,7 @@ Link for download:
 
 4. Clone workshop to aws machine by command: 
     cd ~/
-    git clone https://github.com/praparn/kubernetes_202104.git
+    git clone https://github.com/praparn/kubernetes_202109.git
 
 5. Check module for IPVS by command:
     sudo lsmod | grep -e ip_vs -e nf_conntrack_ipv4
@@ -32,7 +32,7 @@ libcrc32c              16384  2 nf_conntrack,ip_vs
 6. Initial kubernetes by command:
     sudo su -
     kubeadm config images pull
-    kubeadm init --config /home/ubuntu/kubernetes_202104/WorkShop_1.1_Install_Kubernetes/kubeadm-init-basic-containerd.yaml
+    kubeadm init --config /home/ubuntu/kubernetes_202109/WorkShop_1.1_Install_Kubernetes/kubeadm-init-basic-containerd.yaml
     exit
 
 7. Setup credential for regular user by command:
@@ -43,7 +43,7 @@ libcrc32c              16384  2 nf_conntrack,ip_vs
 	kubectl taint nodes --all node-role.kubernetes.io/master-
 
 8. Install network component by command:
-    kubectl apply -f https://raw.githubusercontent.com/praparn/kubernetes_202104/master/WorkShop_2.5_Kubernetes_RealWorld/calico_tuning.yaml
+    kubectl apply -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.5_Kubernetes_RealWorld/calico_tuning.yaml
     watch kubectl get pods --all-namespaces
 
 
@@ -82,7 +82,7 @@ libcrc32c              16384  2 nf_conntrack,ip_vs
     kubectl delete pods/webtest
     kubectl delete svc/webtest
 
-15. Now all workshop is on "/home/ubuntu/kubernetes_202104"
+15. Now all workshop is on "/home/ubuntu/kubernetes_202109"
 
 
 *Remark: In case you need to reinitial all this lab again please kindly following command below (*Warnning: This will reset all lab that you had been operate before)
