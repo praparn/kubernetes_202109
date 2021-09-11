@@ -13,7 +13,7 @@ bootstrapTokens:
   - signing
 nodeRegistration:
 #  name: "ec2-10-100-0-1"
-  criSocket: "/var/run/dockershim.sock"
+#  criSocket: "/var/run/dockershim.sock"
   taints:
     - key: "kubeadmNode"
       value: "master"
@@ -28,7 +28,6 @@ localAPIEndpoint:
 #skipPhases:
 #  - add/kube-proxy
 ---
-
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
 etcd:
