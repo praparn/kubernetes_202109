@@ -12,7 +12,7 @@ localAPIEndpoint:
 nodeRegistration:
   kubeletExtraArgs:
     "feature-gates": "EphemeralContainers=true"
-  criSocket: /var/run/dockershim.sock
+  #criSocket: /var/run/dockershim.sock
   imagePullPolicy: IfNotPresent
   taints: null
 ---
