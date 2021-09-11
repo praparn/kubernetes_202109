@@ -41,7 +41,6 @@ libcrc32c              16384  2 nf_conntrack,ip_vs
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
   	sudo chown $(id -u):$(id -g) $HOME/.kube/config
 	kubectl taint nodes --all node-role.kubernetes.io/master-
-    kubectl taint nodes --all kubeadmNode-
 
 8. Install network component by command:
     kubectl apply -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.5_Kubernetes_RealWorld/calico_tuning.yaml
