@@ -1,4 +1,4 @@
-apiVersion: kubeadm.k8s.io/v1beta2
+apiVersion: kubeadm.k8s.io/v1beta3
 bootstrapTokens:
 - groups:
   - system:bootstrappers:kubeadm:default-node-token
@@ -12,10 +12,10 @@ localAPIEndpoint:
 nodeRegistration:
   kubeletExtraArgs:
     "feature-gates": "EphemeralContainers=true"
-  #criSocket: /var/run/dockershim.sock
-  taints:
-  - effect: NoSchedule
-    key: node-role.kubernetes.io/master
+  criSocket: /var/run/dockershim.sock
+  imagePullPolicy: IfNotPresent
+  name: node
+  taints: null
 ---
 apiServer:
   extraArgs:
@@ -23,10 +23,10 @@ apiServer:
     enable-admission-plugins: NamespaceLifecycle,LimitRanger,ServiceAccount,TaintNodesByCondition,Priority,DefaultTolerationSeconds,DefaultStorageClass,StorageObjectInUseProtection,PersistentVolumeClaimResize,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,RuntimeClass,ResourceQuota
     "feature-gates": "RotateKubeletClientCertificate=true, RotateKubeletServerCertificate=true, TTLAfterFinished=true, EphemeralContainers=true, ServiceTopology=true, EndpointSlice=true"
   timeoutForControlPlane: 4m0s
-apiVersion: kubeadm.k8s.io/v1beta2
+apiVersion: kubeadm.k8s.io/v1beta3
 certificatesDir: /etc/kubernetes/pki
 clusterName: KubernetesLab
-controlPlaneEndpoint: ""
+#controlPlaneEndpoint: ""
 controllerManager:
   extraArgs:
     "feature-gates": "RotateKubeletClientCertificate=true, RotateKubeletServerCertificate=true, TTLAfterFinished=true, EphemeralContainers=true, ServiceTopology=true, EndpointSlice=true"

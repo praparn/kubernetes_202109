@@ -89,4 +89,3 @@ libcrc32c              16384  2 nf_conntrack,ip_vs
     sudo su -
     kubeadm reset           ==> Answer 'y'
     sudo rm -rf /var/lib/etcd
-    docker system prune -af  ==> Answer 'y'
