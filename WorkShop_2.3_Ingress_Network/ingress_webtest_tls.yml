@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   name: ingresswebtesttls
 spec:
+  ingressClassName: nginx
   tls:
   - hosts:
     - webtest1.kuberneteslabthailand.com
