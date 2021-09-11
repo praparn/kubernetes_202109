@@ -14,7 +14,6 @@ nodeRegistration:
     "feature-gates": "EphemeralContainers=true"
   criSocket: /var/run/dockershim.sock
   imagePullPolicy: IfNotPresent
-  name: node
   taints: null
 ---
 apiServer:
