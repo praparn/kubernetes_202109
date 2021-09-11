@@ -18,8 +18,6 @@ nodeRegistration:
     - key: "kubeadmNode"
       value: "master"
       effect: "NoSchedule"
-  kubeletExtraArgs:
-    v: 4
   ignorePreflightErrors:
     - IsPrivilegedUser
   imagePullPolicy: "IfNotPresent"
