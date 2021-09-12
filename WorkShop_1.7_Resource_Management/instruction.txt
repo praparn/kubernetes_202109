@@ -123,7 +123,36 @@ Part 2: Name space level configuration:
 	kubectl get pods --namespace=webtest-namespace
 	kubectl describe pods <pods name> --namespace=webtest-namespace
 
-12. Clean up lab by command:
-	kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_deploy.yml --namespace=webtest-namespace
-	kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/cadvisor_deploy.yml
+12. Clean up lab by command: 
+    kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_deploy.yml --namespace=webtest-namespace
+    kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/cadvisor_deploy.yml
 	kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_namespace.yml
+
+====================================================
+Part 3: Qos configuration:
+====================================================
+
+1. Create Namespace for QoS by command:
+    kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/qos_namespace.yml
+
+2. Create Pods for Guaranteed Qos by command:
+    kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_pod_guaranteed.yml
+
+3. Check output qos for pods and cleanup by command:
+    kubectl get pods webtest --namespaces=qos-namespace --output=yaml
+    kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_pod_guaranteed.yml
+
+4. Create Pods for Burstable Qos by command:
+	kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_pod_burstable.yml
+
+5. Check output qos for pods and cleanup by command:
+    kubectl get pods webtest --namespaces=qos-namespace --output=yaml
+    kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_pod_burstable.yml
+
+6. Create Pods for Besteffort Qos by command:
+	kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_pod_besteffort.yml
+
+7. Check output qos for pods and cleanup by command:
+    kubectl get pods webtest --namespaces=qos-namespace --output=yaml
+    kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_pod_besteffort.yml
+
