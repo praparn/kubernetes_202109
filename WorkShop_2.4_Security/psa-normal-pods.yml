@@ -1,25 +1,29 @@
 apiVersion: "v1"
 kind: Pod
 metadata:
-  name: nginx
-  namespace: namespace-psp
+  name: alpine
+  namespace: namespace-psa
   labels:
-    name: nginx
+    name: alpine
     owner: Praparn_L
     version: "1.0"
     module: WebServer
     environment: development
 spec:
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 3000
+    fsGroup: 2000
   containers:
     - name: web
-      image: labdocker/nginx:latest
+      image: labdocker/alpine:latest
       resources:
         requests:
           memory: "16Mi"
           cpu: "100m"
         limits:
           memory: "32Mi"
-          cpu: "1"
+          cpu: "200m"
       ports:
-        - containerPort: 80
+        - containerPort: 22
           protocol: TCP

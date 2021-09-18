@@ -61,7 +61,7 @@ controlPlaneEndpoint: "2.2.2.2:6443"
 apiServer:
   extraArgs:
     authorization-mode: "Node,RBAC"
-    "feature-gates": "APIServerTracing=true,CPUManagerPolicyOptions=true,ExpandedDNSConfig=true"
+    "feature-gates": "APIServerTracing=true,CPUManagerPolicyOptions=true,ExpandedDNSConfig=true,PodSecurity=true"
   #extraVolumes:
   #  - name: "some-volume"
   #    hostPath: "/etc/some-path"
@@ -75,7 +75,7 @@ controllerManager:
   extraArgs:
     "node-cidr-mask-size": "20"
     cloud-provider: aws
-    "feature-gates": "APIServerTracing=true,CPUManagerPolicyOptions=true,ExpandedDNSConfig=true"
+    "feature-gates": "APIServerTracing=true,CPUManagerPolicyOptions=true,ExpandedDNSConfig=true,PodSecurity=true"
   #extraVolumes:
   #  - name: "some-volume"
   #    hostPath: "/etc/some-path"
@@ -85,7 +85,7 @@ controllerManager:
 scheduler:
   extraArgs:
     address: "2.2.2.2"
-    "feature-gates": "APIServerTracing=true,CPUManagerPolicyOptions=true,ExpandedDNSConfig=true"
+    "feature-gates": "APIServerTracing=true,CPUManagerPolicyOptions=true,ExpandedDNSConfig=true,PodSecurity=true"
  # extraVolumes:
  #   - name: "some-volume"
  #     hostPath: "/etc/some-path"
