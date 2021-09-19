@@ -2,7 +2,10 @@ Instruction for Workshop 2.5 Kubernetes in RealWorld:
 Note: This instruction will start lab for kubernetes's cluster for real workshop:
 
 0. Reinitial your machine before grouping with your friend by command:
+    (master node)
     kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.5_Kubernetes_RealWorld/calico_tuning.yaml
+
+	(all node)
 	sudo su -
     kubeadm reset
 	rm -rf /var/lib/etcd
@@ -61,7 +64,7 @@ tmux new -s Lab
 
 5. (Master) initial cluster by command:
 	sudo su -
-	swapoff -a
+	kubeadm config images pull
 	kubeadm init --config /home/ubuntu/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 	exit
 
@@ -149,7 +152,6 @@ more ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-join.yaml
 
 15. (Worker1) join cluster by command:
 sudo su -
-swapoff -a
 kubeadm join --config /home/ubuntu/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-join.yaml
 exit
 htop
@@ -164,7 +166,6 @@ more ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-join.yaml
 
 17. (Worker2) join cluster by command:
 sudo su -
-swapoff -a
 kubeadm join --config /home/ubuntu/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-join.yaml
 exit
 htop
