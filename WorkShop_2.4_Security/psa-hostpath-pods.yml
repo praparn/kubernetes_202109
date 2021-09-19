@@ -1,10 +1,10 @@
 apiVersion: "v1"
 kind: Pod
 metadata:
-  name: alpineweb
+  name: alpine
   namespace: namespace-psa
   labels:
-    name: alpineweb
+    name: alpine
     owner: Praparn_L
     version: "1.0"
     module: WebServer
@@ -15,8 +15,9 @@ spec:
     runAsGroup: 3000
     fsGroup: 2000
   containers:
-    - name: web
-      image: labdocker/alpineweb:latest
+    - name: alpine
+      image: labdocker/alpine:latest
+      command: ["sh"]
       resources:
         requests:
           memory: "16Mi"

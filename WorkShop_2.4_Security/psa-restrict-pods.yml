@@ -1,7 +1,7 @@
 apiVersion: "v1"
 kind: Pod
 metadata:
-  name: alpineweb
+  name: alpine
   annotations:
     container.apparmor.security.beta.kubernetes.io/alpine: localhost/restrict-apparmor
   namespace: namespace-psa
@@ -17,8 +17,8 @@ spec:
     runAsGroup: 3000
     fsGroup: 2000
   containers:
-    - name: web
-      image: labdocker/alpineweb:latest
+    - name: alpine
+      image: labdocker/alpine:latest
       resources:
         requests:
           memory: "16Mi"
