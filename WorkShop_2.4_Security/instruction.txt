@@ -154,7 +154,8 @@ kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/ma
 kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/psa-normal-pods.yml
 
 7. Access to pods and check user id and file permission by command:
-kubectl exec -it alpine sh -n=namespace-psa
+kubectl get pods -n=namespace-psa
+kubectl exec -it alpineweb sh -n=namespace-psa
 ps 											==> record USER
 mkdir /data && touch /data/testfile			
 ls /data/ 									
