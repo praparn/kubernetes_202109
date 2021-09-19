@@ -136,24 +136,19 @@ kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/ma
 ============================================================================================================================================================
 Part 4: Pods Security Association (PSA)
 ============================================================================================================================================================
-1. Install apparmor profile and Load apparmor restrict profile by command:
-	sudo apparmor_parser -r -W ~/kubernetes_202109/WorkShop_2.4_Security/restrict-apparmor
-
-2. Check current profile of apparmor by command: sudo aa-status
-
-2. Create Namespace with enforce PSA by command:
+1. Create Namespace with enforce PSA by command:
 kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/psa-namespace.yml
 
-3. Check detail of namespace by command:
+2. Check detail of namespace by command:
 kubectl describe namespace/namespace-psa
 
-4. Create deployment pods with hostpath (Expect: Failure by enforce/baseline) by command:
+3. Create deployment pods with hostpath (Expect: Failure by enforce/baseline) by command:
 kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/psa-hostpath-pods.yml
 
-6. Create deployment with standard pods by command (Expect: Get warning message by warning/restrict):
+4. Create deployment with standard pods by command (Expect: Get warning message by warning/restrict):
 kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/psa-normal-pods.yml
 
-7. Access to pods and check user id and file permission by command:
+5. Access to pods and check user id and file permission by command:
 kubectl get pods -n=namespace-psa
 kubectl exec -it alpineweb sh -n=namespace-psa
 ps 											==> record USER
@@ -161,26 +156,9 @@ mkdir /data && touch /data/testfile
 ls /data/ 									
 ping 1.1.1.1
 apk update && apk add curl
-curl https://www.google.com
 id 											==> record ID
 exit
 
-9. Delete test pods by command:
+6. CleanUp Lab by command:
 kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/psa-normal-pods.yml
-
-10. Create deployment with restrict pods by command:
-kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/psa-restrict-pods.yml
-
-11. Access to pods and check user id and file permission by command:
-kubectl exec -it alpine sh
-ping 1.1.1.1
-apk update && apk add curl
-curl https://www.google.com
-exit
-
-12. Delete test pods by command:
-kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/psa-restrict-pods.yml
-
-
-13. Remove apparmor profile by command: sudo apparmor_parser -R ~/kubernetes_202109/WorkShop_2.4_Security/restrict-apparmor && sudo aa-status
-
+kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/psa-namespace.yml
