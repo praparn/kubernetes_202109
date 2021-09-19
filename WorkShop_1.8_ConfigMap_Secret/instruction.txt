@@ -7,7 +7,6 @@ Part1: Container level configuration:
 ====================================================
 1. Get command prompt for access folder workshop 1.8 by command :cd /xxxx/WorkShop_1.8_ConfigMap_Secret
 2. Check File on WorkShop
-
 3. Create Namespace by command:
 	kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.8_ConfigMap_Secret/webmicroservice_namespace.yml
 

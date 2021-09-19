@@ -119,7 +119,7 @@ This workshop will create Pods with multiple container
 13. Delete existing Pods "web" by command:
 		kubectl delete pods web
 
-14. Test get webpage by browser: curl http://$Server_IP:$Server_Port/
+14. Test get webpage by command: curl http://$Server_IP:$Server_Port/
 
 15. Remove Pods and Service for Cleanup by command:
 		kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202104/master/WorkShop_1.2_Pods_Service_Deployment/multicontainer/webmodule_pod2.yml

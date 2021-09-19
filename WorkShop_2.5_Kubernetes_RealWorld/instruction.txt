@@ -7,6 +7,7 @@ Note: This instruction will start lab for kubernetes's cluster for real workshop
     kubeadm reset
 	rm -rf /var/lib/etcd
 	rm -rf /home/ubuntu/.kube
+	ctr -n k8s.io i rm $(ctr -n k8s.io i ls -q)
 	reboot
 
 	*Optional1: For clean workshop and initial lab*

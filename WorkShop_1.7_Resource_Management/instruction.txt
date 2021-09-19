@@ -139,20 +139,20 @@ Part 3: Qos configuration:
     kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_pod_guaranteed.yml
 
 3. Check output qos for pods and cleanup by command:
-    kubectl get pods webtest --namespaces=qos-namespace --output=yaml
+    kubectl describe pods/webtest --namespace=qos-namespace
     kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_pod_guaranteed.yml
 
 4. Create Pods for Burstable Qos by command:
 	kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_pod_burstable.yml
 
 5. Check output qos for pods and cleanup by command:
-    kubectl get pods webtest --namespaces=qos-namespace --output=yaml
+    kubectl describe pods/webtest --namespace=qos-namespace
     kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_pod_burstable.yml
 
 6. Create Pods for Besteffort Qos by command:
 	kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_pod_besteffort.yml
 
 7. Check output qos for pods and cleanup by command:
-    kubectl get pods webtest --namespaces=qos-namespace --output=yaml
+    kubectl describe pods/webtest --namespace=qos-namespace
     kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_1.7_Resource_Management/webtest_pod_besteffort.yml
 

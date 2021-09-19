@@ -86,5 +86,8 @@ libcrc32c              16384  2 nf_conntrack,ip_vs
 
 *Remark: In case you need to reinitial all this lab again please kindly following command below (*Warnning: This will reset all lab that you had been operate before)
     sudo su -
-    kubeadm reset           ==> Answer 'y'
-    sudo rm -rf /var/lib/etcd
+    kubeadm reset
+	rm -rf /var/lib/etcd
+	rm -rf /home/ubuntu/.kube
+	ctr -n k8s.io i rm $(ctr -n k8s.io i ls -q)
+	reboot

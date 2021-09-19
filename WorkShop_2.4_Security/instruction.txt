@@ -74,32 +74,32 @@ sudo openssl x509 -req -in labreadonly.csr -CA /etc/kubernetes/pki/ca.crt -CAkey
 5. Private key and Public key will place on /home/ubuntu (~)
 ls ~/labreadonly*
 
-5. Setup credential context via kubectl by command:
+6. Setup credential context via kubectl by command:
 cd ~
 cp ~/.kube/config ~/.kube/config_backup
 kubectl config set-credentials labreadonly --client-certificate=/home/ubuntu/labreadonly.crt  --client-key=/home/ubuntu/labreadonly.key
 kubectl config set-context labreadonly-context --cluster=KubernetesLab --namespace=security --user=labreadonly
 
-6. Test use credential for operate by command: (Expect: Forbidden)
+7. Test use credential for operate by command: (Expect: Forbidden)
 kubectl --context=labreadonly-context get pods
 
-7. Create Role "ReadOnly" by command:
+8. Create Role "ReadOnly" by command:
 kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/security-role-readonly.yml
 kubectl get roles -n=security
 
-8. Create RoleBinding for user "labreadonly" with role "rolereadonly"
+9. Create RoleBinding for user "labreadonly" with role "rolereadonly"
 kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/security-rolebinding-labsecurity.yml
 kubectl get rolebinding -n=security
 
-9. Try to get pods again.
+10. Try to get pods again.
 kubectl --context=labreadonly-context get pods
 
-10. Try to get svc,delete pods/create new pods: (Expect: Forbidden)
+11. Try to get svc,delete pods/create new pods: (Expect: Forbidden)
 kubectl --context=labreadonly-context get svc
 kubectl --context=labreadonly-context delete pods/webtest
 kubectl --context=labreadonly-context run webtest --image=labdocker/nginx:http2 --port=443 -n=security
 
-11. CleanUp Lab:
+12. CleanUp Lab:
 kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/security-rolebinding-labsecurity.yml
 kubectl config delete-context labreadonly-context
 
@@ -147,21 +147,13 @@ kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/ma
 3. Check detail of namespace by command:
 kubectl describe namespace/namespace-psa
 
-4. Create deployment pods with hostpath (restrict by baseline) by command:
+4. Create deployment pods with hostpath (Expect: Failure by enforce/baseline) by command:
 kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/psa-hostpath-pods.yml
 
-5. Check deployment status by command:
-kubectl get deployment -n=namespace-psa
-kubectl get pods -n=namespace-psa
-kubectl desceribe pods/alpine -n=namespace-psa
-
-6. Delete test pods by command:
-kubectl delete -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/psa-hostpath-pods.yml
-
-7. Create deployment with standard pods by command:
+6. Create deployment with standard pods by command (Expect: Get warning message by warning/restrict):
 kubectl create -f https://raw.githubusercontent.com/praparn/kubernetes_202109/master/WorkShop_2.4_Security/psa-normal-pods.yml
 
-8. Access to pods and check user id and file permission by command:
+7. Access to pods and check user id and file permission by command:
 kubectl exec -it alpine sh
 ps 											==> record USER
 mkdir /data && touch /data/testfile

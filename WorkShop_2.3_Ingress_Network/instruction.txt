@@ -45,7 +45,7 @@ spec:
 ========================================
 	0.2 Check service and pods by command: 
 	kubectl get svc -n=ingress-nginx				==> Record Port No for Create LoadBalancer (*Important)
-	watch kubectl get pods -n=ingress-nginx			
+	watch kubectl get pods -n=ingress-nginx		
 
 ========================================
 Example:

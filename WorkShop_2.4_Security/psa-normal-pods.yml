@@ -1,7 +1,7 @@
 apiVersion: "v1"
 kind: Pod
 metadata:
-  name: alpine
+  name: alpineweb
   namespace: namespace-psa
   labels:
     name: alpine
@@ -16,7 +16,7 @@ spec:
     fsGroup: 2000
   containers:
     - name: web
-      image: labdocker/alpine:latest
+      image: labdocker/alpineweb:latest
       resources:
         requests:
           memory: "16Mi"
