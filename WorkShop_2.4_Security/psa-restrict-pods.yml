@@ -19,6 +19,7 @@ spec:
   containers:
     - name: alpine
       image: labdocker/alpine:latest
+      command: ["/bin/sh"]
       resources:
         requests:
           memory: "16Mi"
