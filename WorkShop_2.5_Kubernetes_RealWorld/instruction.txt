@@ -57,7 +57,7 @@ tmux new -s Lab
 4. (Master) Prepare configuration for initial kubernetes master
 	cd ~
 	sed -i -e 's/hostnamemaster/<hostname of master node>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
-	sed -i -e 's/clusterName: KubernetesClusterName/clusterName: <ClusterName>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
+	sed -i -e 's/KubernetesClusterName/<ClusterName>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 	sed -i -e 's/2.2.2.2/<Private IP Address of Master>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 	sed -i -e 's/1.1.1.1/<Public IP Address of Master>/g' ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 	more ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
