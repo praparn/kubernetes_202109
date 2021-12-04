@@ -65,4 +65,3 @@ kubectl delete namespace monitoring
    kubectl delete crd servicemonitors.monitoring.coreos.com
    kubectl delete crd thanosrulers.monitoring.coreos.com
    kubectl delete namespace monitoring
-   kubectl delete -f ~/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/ingress-nginx/deploy/static/provider/aws/deploy.yaml
