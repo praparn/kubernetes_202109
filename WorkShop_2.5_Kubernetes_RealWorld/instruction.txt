@@ -64,7 +64,6 @@ tmux new -s Lab
 
 5. (Master) initial cluster by command:
 	sudo su -
-	kubeadm config images pull
 	kubeadm init --config /home/ubuntu/kubernetes_202109/WorkShop_2.5_Kubernetes_RealWorld/kubeadm-init.yaml
 	exit
 
